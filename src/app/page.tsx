@@ -1,103 +1,145 @@
-import Image from "next/image";
+"use client"
+
+import { useState, useEffect } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { presentationData } from "@/data/presentation-data"
+import SlideIntroduction from "@/components/slides/slide-introduction"
+import SlidePersonal from "@/components/slides/slide-personal"
+import SlideTableOfContents from "@/components/slides/slide-table-contents"
+import SlideImpact from "@/components/slides/slide-impact"
+import SlideBenefits from "@/components/slides/slide-benefits"
+import SlideComponents from "@/components/slides/slide-components"
+import SlideInAction from "@/components/slides/slide-in-action"
+import SlideToolbox from "@/components/slides/slide-toolbox"
+import SlideRule from "@/components/slides/slide-rule"
+import SlideLearning from "@/components/slides/slide-learning"
+import SlideConclusions from "@/components/slides/slide-conclusions"
+import SlideQuestions from "@/components/slides/slide-questions"
+import SlideWorkflow from "@/components/slides/slide-workflow"
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const totalSlides = presentationData.slides.length
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const goToNextSlide = () => {
+    if (currentSlide < totalSlides - 1) {
+      setCurrentSlide(currentSlide + 1)
+    }
+  }
+
+  const goToPrevSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1)
+    }
+  }
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "ArrowRight") {
+      goToNextSlide()
+    } else if (e.key === "ArrowLeft") {
+      goToPrevSlide()
+    } else if (e.key === "f") {
+      toggleFullscreen()
+    }
+  }
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`)
+      })
+      setIsFullscreen(true)
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+        setIsFullscreen(false)
+      }
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [currentSlide])
+
+  const renderSlide = () => {
+    switch (currentSlide) {
+      case 0:
+        return <SlideIntroduction slide={presentationData.slides[0]} />
+      case 1:
+        return <SlidePersonal slide={presentationData.slides[1]} />
+      case 2:
+        return <SlideTableOfContents />
+      case 3:
+        return <SlideImpact slide={presentationData.slides[3]} />
+      case 4:
+        return <SlideBenefits slide={presentationData.slides[4]} />
+      case 5:
+        return <SlideComponents slide={presentationData.slides[5]} />
+      case 6:
+        return <SlideInAction slide={presentationData.slides[6]} />
+      case 7:
+        return <SlideToolbox slide={presentationData.slides[7]} />
+      case 8:
+        return <SlideRule slide={presentationData.slides[8]} />
+      case 9:
+        return <SlideLearning slide={presentationData.slides[9]} />
+      case 10:
+        return <SlideConclusions slide={presentationData.slides[10]} />
+      case 11:
+        return <SlideQuestions slide={presentationData.slides[11]} />
+      case 12:
+        return <SlideWorkflow slide={presentationData.slides[12]} />
+      default:
+        return <SlideIntroduction slide={presentationData.slides[0]} />
+    }
+  }
+
+  return (
+    <main className="relative h-screen w-screen overflow-hidden">
+      {/* Navigation controls */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50 flex items-center justify-center gap-4">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={goToPrevSlide}
+          disabled={currentSlide === 0}
+          className="bg-black/20 backdrop-blur-md border-white/20 hover:bg-white/20 text-white rounded-full h-10 w-10"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        <div className="text-white/80 text-sm font-light">
+          {currentSlide + 1} / {totalSlides}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={goToNextSlide}
+          disabled={currentSlide === totalSlides - 1}
+          className="bg-black/20 backdrop-blur-md border-white/20 hover:bg-white/20 text-white rounded-full h-10 w-10"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* Fullscreen button */}
+      <Button
+        variant="outline"
+        onClick={toggleFullscreen}
+        className="absolute bottom-6 right-6 z-50 bg-black/20 backdrop-blur-md border-white/20 hover:bg-white/20 text-white text-xs rounded-full"
+      >
+        {isFullscreen ? "Salir (F)" : "Pantalla Completa (F)"}
+      </Button>
+
+      {/* Slide content */}
+      {renderSlide()}
+    </main>
+  )
 }
+
